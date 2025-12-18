@@ -101,19 +101,6 @@ services:
     dns:
       - ${SUBNET_SERVERS}.${DNS_SRV_IP}
 
-  espocrm-daemon:
-    image: espocrm/espocrm
-    container_name: espocrm-daemon
-    volumes:
-      - espocrm-storage:/var/www/html
-    restart: no
-    entrypoint: docker-daemon.sh   
-    networks:
-      servers_net:
-        ipv4_address: ${SUBNET_SERVERS}.${SRV_ESPOCRM_DM_IP} 
-    dns:
-      - ${SUBNET_SERVERS}.${DNS_SRV_IP}
-
   srv_ldap:
     build: ./srv_ldap
     container_name: srv_ldap
@@ -737,7 +724,7 @@ networks:
     driver_opts:
       com.docker.network.bridge.enable_icc: "true"
       com.docker.network.bridge.name: br-uplink
-      com.docker.network.bridge.enable_ip_masquerade: "false"      
+#      com.docker.network.bridge.enable_ip_masquerade: "false"      
   dev_net:
     name: dev_net
     driver: bridge
