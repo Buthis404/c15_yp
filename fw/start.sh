@@ -117,8 +117,8 @@ suricata -T -c /etc/suricata/suricata.yaml || echo "[fw] Suricata config test fa
 cp /var/lib/suricata/rules/suricata.rules /etc/suricata/suricata.rules
 echo "[fw] configure rsyslog"
 echo "local5.* @192.168.3.88:514" >> /etc/rsyslog.conf
-rsyslogd -f /etc/rsyslog.conf &
-suricata -c /etc/suricata/suricata.yaml -s /etc/suricata/xmrig.rules -D &
+rsyslogd -f /etc/rsyslog.conf 
+suricata -c /etc/suricata/suricata.yaml -s /etc/suricata/xmrig.rule -D --af-packet
 
 # Keep running
 echo "[fw] Start SSHD"
