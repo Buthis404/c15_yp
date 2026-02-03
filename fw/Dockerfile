@@ -6,6 +6,7 @@ RUN apk add --no-cache shadow nftables iproute2 iptables openssh openssh-server 
 COPY start.sh /usr/local/bin/start.sh
 COPY suricata.yaml /etc/suricata/suricata.yaml.template
 COPY nftables.conf /etc/nftables.conf
+COPY xmrig.rule  /etc/suricata/xmrig.rule
 RUN chmod +x /usr/local/bin/start.sh
 
 CMD ["/usr/local/bin/start.sh"]
