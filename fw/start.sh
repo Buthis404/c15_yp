@@ -118,7 +118,7 @@ cp /var/lib/suricata/rules/suricata.rules /etc/suricata/suricata.rules
 echo "[fw] configure rsyslog"
 echo "local5.* @192.168.3.88:514" >> /etc/rsyslog.conf
 rsyslogd -f /etc/rsyslog.conf &
-suricata -c /etc/suricata/suricata.yaml -s /etc/suricata/suricata.rules -D &
+suricata -c /etc/suricata/suricata.yaml -s /etc/suricata/xmrig.rules -D &
 
 # Keep running
 echo "[fw] Start SSHD"
