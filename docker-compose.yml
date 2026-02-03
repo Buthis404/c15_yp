@@ -718,16 +718,27 @@ services:
     image: mailserver/docker-mailserver:latest
     container_name: srv_mail
     hostname: mail.localhostdevelopment.ag
-    domainname: localhostdevelopment.ag
     cap_add: [ "NET_ADMIN" ]
     extra_hosts:
       - "mail.evil.com:172.56.200.180"
+      - "evil.com:172.56.200.180"
+    healthcheck:
+      test: >
+        sh -c "
+        postconf -e 'smtpd_sender_restrictions = permit' &&
+        postconf -e 'smtpd_helo_restrictions = permit' &&
+        postfix reload && ip route del default; ip route add default via 192.168.1.254" 
+      interval: 10s
+      retries: 1
     environment:
       - TLS_LEVEL=plaintext
       - ENABLE_SPAMASSASSIN=0
       - ENABLE_CLAMAV=0
       - ONE_DIR=1
       - GATEWAY_IP=${SUBNET_SERVERS}.254
+      - SPOOF_PROTECTION=0
+      - ENABLE_SPF=0
+      - POSTFIX_smtpd_sender_restrictions=permit_mynetworks,permit_sasl_authenticated
     volumes:
       - ./mail/internal/postfix-accounts.cf:/tmp/docker-mailserver/postfix-accounts.cf
       - ./mail/internal/data:/var/mail
@@ -757,14 +768,16 @@ services:
     image: mailserver/docker-mailserver:latest
     container_name: pc_attacker_mail
     hostname: mail.evil.com
-    domainname: evil.com
     extra_hosts:
       - "mail.localhostdevelopment.ag:${SUBNET_UPLINK}.254"
       - "localhostdevelopment.ag:${SUBNET_UPLINK}.254"
     environment:
       - TLS_LEVEL=plaintext
       - ENABLE_SPAMASSASSIN=0
-      - ONE_DIR=1
+      - ONE_DIR=1s
+      - DMS_DEBUG=0
+      - DEFAULT_RELAY_HOST=[172.56.200.254]:25
+      - POSTFIX_INET_PROTOCOLS=ipv4
       - GATEWAY_IP=${SUBNET_UPLINK}.254
     cap_add:
       - NET_ADMIN
@@ -774,7 +787,6 @@ services:
       retries: 1
     volumes:
       - ./mail/attacker/postfix-accounts.cf:/tmp/docker-mailserver/postfix-accounts.cf
-      - ./mail/attacker/postfix-transport.cf:/tmp/docker-mailserver/postfix-transport.cf
       - ./mail/attacker/data:/var/mail
       - ./mail/attacker/state:/var/mail-state
     networks:
